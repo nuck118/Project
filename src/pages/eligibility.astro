@@ -1,0 +1,11 @@
+---
+import EditorialLayout from '../layouts/EditorialLayout.astro';
+import EditorialPortal from '../components/EditorialPortal';
+---
+
+<EditorialLayout
+  title="60-Second Permit Eligibility Audit — MobilWork Poland"
+  description="Check your eligibility for a Polish Karta Pobytu, EU Blue Card, or Work Permit and receive an instant Voivodeship processing timeline."
+>
+  <EditorialPortal client:load page="eligibility" />
+</EditorialLayout>

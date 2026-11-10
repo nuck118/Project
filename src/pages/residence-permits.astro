@@ -1,0 +1,11 @@
+---
+import EditorialLayout from '../layouts/EditorialLayout.astro';
+import EditorialPortal from '../components/EditorialPortal';
+---
+
+<EditorialLayout
+  title="Residence Permits (Karta Pobytu & EU Blue Card) — MobilWork Poland"
+  description="Biometric Polish residence permits (Karta Pobytu Czasowego, EU Blue Card Art. 127, Family Reunification Art. 159) across all 16 Voivodeship Offices."
+>
+  <EditorialPortal client:load page="residence" />
+</EditorialLayout>
