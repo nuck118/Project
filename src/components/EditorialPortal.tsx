@@ -1318,6 +1318,19 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                   transition={{ duration: 0.5, delay: 0.15 }}
                 >
                   <div className="flyer-curved-banner">
+                    {/* Authentic Bydgoszcz Spichrze Panorama blended with Royal Blue */}
+                    <div className="curved-banner-photo-wrap" aria-hidden="true">
+                      <img
+                        src="/assets/images/bydgoszcz-spichrze-panorama-hd.jpg"
+                        alt="Historic half-timbered granaries of Bydgoszcz (Spichrze nad Brdą)"
+                        className="curved-banner-photo-img"
+                        width={1238}
+                        height={990}
+                      />
+                      <div className="curved-banner-overlay-gradient" />
+                      <div className="curved-banner-overlay-vignette" />
+                    </div>
+
                     {/* Poland map with Bydgoszcz pin */}
                     <div className="curved-map-wrap">
                       <img
@@ -1338,17 +1351,6 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                         {flyerHero.slogan.line4}
                       </div>
                       <div className="curved-white-bar" aria-hidden="true" />
-                    </div>
-
-                    {/* Historic Bydgoszcz Granaries (Spichrze nad Brdą) - Prominent, Large & Crisp */}
-                    <div className="curved-granary-wrap">
-                      <img
-                        src="/assets/images/spichrze-bydgoszcz-hd.png"
-                        alt="Historic half-timbered granaries of Bydgoszcz (Spichrze nad Brdą)"
-                        className="curved-granary-img"
-                        width={510}
-                        height={542}
-                      />
                     </div>
                   </div>
                 </motion.div>
