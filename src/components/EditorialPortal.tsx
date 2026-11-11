@@ -247,6 +247,34 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
     { route: 'legal', href: '/legal', label: t.nav.legal }
   ];
 
+  // Desktop Primary Navigation (Unclustered: 4 clean links with ample breathing space)
+  const desktopNavItems = [
+    {
+      id: 'services',
+      href: page === 'home' ? '#services-section' : `/residence-permits?lang=${lang}`,
+      label: t.nav.residence,
+      isAnchor: page === 'home'
+    },
+    {
+      id: 'process',
+      href: page === 'home' ? '#process-section' : `/process?lang=${lang}`,
+      label: t.nav.process,
+      isAnchor: page === 'home'
+    },
+    {
+      id: 'stories',
+      href: page === 'home' ? '#stories-section' : `/stories?lang=${lang}`,
+      label: t.nav.stories,
+      isAnchor: page === 'home'
+    },
+    {
+      id: 'faq',
+      href: page === 'home' ? '#faq-section' : `/residence-permits?lang=${lang}#faq-section`,
+      label: 'FAQ',
+      isAnchor: page === 'home'
+    }
+  ];
+
   // Reusable Section Renderers
   const renderProcessSection = () => {
     const stepData = t.process.steps[activeStep] || t.process.steps[0];
@@ -1020,7 +1048,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
         Skip to main content
       </a>
 
-      {/* Header Matching image.png: Logo on Left, Nav in Center, BYDGOSZCZ / PL • EN • RU on Right */}
+      {/* Header: Clean, Unclustered & Spacious */}
       <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`} id="site-header">
         <div className="container nav-container">
           <a href={`/?lang=${lang}`} className="brand-logo-wrap" id="nav-brand-logo">
@@ -1028,56 +1056,49 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
               src="/assets/images/mobilwork-logo.png"
               alt="MobilWork — Residence & Work in Poland"
               className="brand-logo-img"
-              width={210}
-              height={36}
+              width={190}
+              height={38}
             />
           </a>
 
           <nav className="nav-links" aria-label="Primary Navigation">
-            {navItems.map((item) => {
-              const isActive = page === item.route;
-              return (
-                <a
-                  key={item.route}
-                  href={`${item.href}?lang=${lang}`}
-                  className={`nav-link ${isActive ? 'is-active' : ''}`}
-                  id={`nav-link-${item.route}`}
-                >
-                  {item.label}
-                  {isActive && (
-                    <motion.span
-                      layoutId="nav-underline"
-                      className="nav-link__underline"
-                    />
-                  )}
-                </a>
-              );
-            })}
+            {desktopNavItems.map((item) => (
+              <a
+                key={item.id}
+                href={item.href}
+                className="nav-link"
+                id={`nav-link-${item.id}`}
+                onClick={(e) => {
+                  if (item.isAnchor && item.href.startsWith('#')) {
+                    e.preventDefault();
+                    smoothScrollTo(item.href);
+                  }
+                }}
+              >
+                {item.label}
+              </a>
+            ))}
           </nav>
 
           <div className="header-right-meta">
-            <span className="city-stamp">BYDGOSZCZ</span>
-            <span className="header-slash">/</span>
-            <div className="lang-cluster" role="group" aria-label="Select Language">
-              {LANGUAGES.map((l, idx) => (
-                <React.Fragment key={l.code}>
-                  <button
-                    type="button"
-                    id={`lang-btn-${l.code}`}
-                    className={`lang-btn ${lang === l.code ? 'is-active' : ''}`}
-                    onClick={() => switchLanguage(l.code)}
-                    title={l.nativeName}
-                  >
-                    {l.shortLabel}
-                  </button>
-                  {idx < LANGUAGES.length - 1 && <span className="lang-dot">•</span>}
-                </React.Fragment>
+            <div className="lang-pill-selector" role="group" aria-label="Select Language">
+              {LANGUAGES.map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  id={`lang-btn-${l.code}`}
+                  className={`lang-pill-btn ${lang === l.code ? 'is-active' : ''}`}
+                  onClick={() => switchLanguage(l.code)}
+                  title={l.nativeName}
+                >
+                  {l.shortLabel}
+                </button>
               ))}
             </div>
 
             <a
               href={`/eligibility?lang=${lang}`}
-              className="btn btn--primary btn--sm"
+              className="btn btn--primary btn--sm nav-cta-btn"
               id="nav-cta-eligibility"
             >
               <span>{t.nav.cta}</span>
@@ -1273,10 +1294,10 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
+                  {/* Action Buttons (Unclustered & Crisp) */}
                   <div className="hero-cta-row">
                     <a href={`/eligibility?lang=${lang}`} className="btn btn--primary">
-                      <span>{t.nav.cta} (60s)</span>
+                      <span>{t.nav.cta}</span>
                       <span aria-hidden="true">→</span>
                     </a>
                     <button
@@ -1286,16 +1307,13 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     >
                       <span>{t.hero.exploreBtn}</span>
                     </button>
-                    <span className="hero-guarantee-pill">
-                      ✓ {t.hero.widgetBadge}
-                    </span>
                   </div>
                 </motion.div>
 
                 {/* Right Column: Iconic Blue Curved Shape from image.png */}
                 <motion.div
                   className="hero-flyer-right"
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.15 }}
                 >
@@ -1306,8 +1324,8 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                         src="/assets/images/poland-map-transparent.png"
                         alt="Map of Poland with Bydgoszcz office location"
                         className="curved-poland-map"
-                        width={130}
-                        height={115}
+                        width={140}
+                        height={124}
                       />
                     </div>
 
@@ -1322,14 +1340,14 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                       <div className="curved-white-bar" aria-hidden="true" />
                     </div>
 
-                    {/* Historic Bydgoszcz Granaries */}
+                    {/* Historic Bydgoszcz Granaries (Spichrze nad Brdą) - Prominent, Large & Crisp */}
                     <div className="curved-granary-wrap">
                       <img
-                        src="/assets/images/spichrze-bydgoszcz-transparent.png"
+                        src="/assets/images/spichrze-bydgoszcz-hd.png"
                         alt="Historic half-timbered granaries of Bydgoszcz (Spichrze nad Brdą)"
                         className="curved-granary-img"
-                        width={189}
-                        height={195}
+                        width={510}
+                        height={542}
                       />
                     </div>
                   </div>
