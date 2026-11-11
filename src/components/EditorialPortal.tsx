@@ -25,14 +25,14 @@ interface EditorialPortalProps {
 }
 
 const fadeUpVariant = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 18 },
   visible: (delay = 0) => ({
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.55,
+      duration: 0.45,
       delay,
-      ease: [0.22, 1, 0.36, 1]
+      ease: 'easeOut'
     }
   })
 };
@@ -46,7 +46,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
 
   // 2. Hero & Services Interactive State
   const [selectedPermit, setSelectedPermit] = useState<PermitKey>('czasowy');
-  const [selectedCity, setSelectedCity] = useState<CityKey>('warsaw');
+  const [selectedCity, setSelectedCity] = useState<CityKey>('bydgoszcz');
   const [serviceFilter, setServiceFilter] = useState<'all' | 'residence' | 'work' | 'family'>('all');
   const [openDrawers, setOpenDrawers] = useState<Record<string, boolean>>({ czasowy: true });
   const [highlightedPermit, setHighlightedPermit] = useState<PermitKey | null>(null);
@@ -58,7 +58,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
   const [wizStep, setWizStep] = useState<1 | 2 | 3 | 4>(1);
   const [citizenship, setCitizenship] = useState<string>('India');
   const [stayStatus, setStayStatus] = useState<string>('in-poland-visa');
-  const [wizCity, setWizCity] = useState<CityKey>('warsaw');
+  const [wizCity, setWizCity] = useState<CityKey>('bydgoszcz');
   const [empStatus, setEmpStatus] = useState<string>('standard-contract');
   const [leadName, setLeadName] = useState<string>('');
   const [leadContact, setLeadContact] = useState<string>('');
@@ -82,7 +82,6 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
 
   // Initialize Lenis Smooth Scroll + Language Restoration
   useEffect(() => {
-    // Restore saved language or URL ?lang= parameter
     try {
       const params = new URLSearchParams(window.location.search);
       const urlLang = params.get('lang')?.toLowerCase() as LangCode | null;
@@ -99,7 +98,6 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
       // ignore storage errors
     }
 
-    // Initialize Lenis Smooth Scrolling
     const lenis = new Lenis({
       duration: 1.15,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -146,14 +144,15 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
     const el = document.querySelector(selector) as HTMLElement | null;
     if (!el) return;
     if (lenisRef.current) {
-      lenisRef.current.scrollTo(el, { offset: -88 });
+      lenisRef.current.scrollTo(el, { offset: -90 });
     } else {
       el.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   const t = TRANSLATIONS[lang];
-  const currentCityObj = VOIVODESHIP_DATA[selectedCity];
+  const flyerHero = (t as unknown as { flyerHero?: typeof TRANSLATIONS.en.flyerHero }).flyerHero || TRANSLATIONS.en.flyerHero;
+  const currentCityObj = VOIVODESHIP_DATA[selectedCity] || VOIVODESHIP_DATA.bydgoszcz;
   const currentTimeline = currentCityObj.timelines[selectedPermit][lang];
   const currentFee = PERMIT_FEES[selectedPermit][lang];
 
@@ -254,13 +253,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
     return (
       <section className="editorial-section editorial-section--ivory" id="process-section">
         <div className="container">
-          <motion.div
-            className="section-header-split"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUpVariant}
-          >
+          <div className="section-header-split">
             <div>
               <span className="section-eyebrow">{t.process.eyebrow}</span>
               <h2 className="section-title">{t.process.title}</h2>
@@ -272,12 +265,11 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                   <a
                     href={`/process?lang=${lang}`}
                     style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.76rem',
-                      fontWeight: 700,
-                      color: 'var(--accent-prussian)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em'
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: '0.86rem',
+                      fontWeight: 800,
+                      color: 'var(--brand-blue)',
+                      letterSpacing: '0.02em'
                     }}
                   >
                     {t.process.fullPageLink}
@@ -285,22 +277,20 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
 
           {/* 4-Stage Interactive Stepper Grid */}
           <div className="stepper-grid" role="tablist" aria-label="4-Stage Permit Protocol">
             {t.process.steps.map((step, idx) => {
               const isSelected = activeStep === idx;
               return (
-                <motion.button
+                <button
                   key={step.num}
                   type="button"
                   role="tab"
                   aria-selected={isSelected}
                   className={`step-card ${isSelected ? 'is-active' : ''}`}
                   onClick={() => setActiveStep(idx)}
-                  whileHover={{ y: -2 }}
-                  transition={{ duration: 0.18 }}
                   id={`step-tab-${idx + 1}`}
                 >
                   <div>
@@ -315,20 +305,20 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     <span>{t.process.inspectCta}</span>
                     <span aria-hidden="true">→</span>
                   </span>
-                </motion.button>
+                </button>
               );
             })}
           </div>
 
-          {/* Animated Step Detail Dossier */}
+          {/* Step Detail Dossier */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`${lang}-step-${activeStep}`}
               className="step-detail-box"
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.25 }}
               id="step-detail-panel"
             >
               <div>
@@ -349,16 +339,16 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                 <div>
                   <span
                     style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.68rem',
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: '0.74rem',
                       textTransform: 'uppercase',
-                      color: 'var(--accent-emerald)',
-                      fontWeight: 700,
+                      color: 'var(--brand-blue)',
+                      fontWeight: 800,
                       display: 'block',
                       marginBottom: '6px'
                     }}
                   >
-                    KPA ART. 32 • STATUTORY PROTECTION
+                    KPA ART. 32 • LEGAL PROXY PROTECTION
                   </span>
                   <h4>{stepData.guaranteeTitle}</h4>
                   <p style={{ marginTop: '8px' }}>{stepData.guaranteeText}</p>
@@ -397,13 +387,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
     return (
       <section className="editorial-section editorial-section--stone" id="services-section">
         <div className="container">
-          <motion.div
-            className="section-header-split"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUpVariant}
-          >
+          <div className="section-header-split">
             <div>
               <span className="section-eyebrow">{t.services.eyebrow}</span>
               <h2 className="section-title">{t.services.title}</h2>
@@ -415,11 +399,10 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                   <a
                     href={`/residence-permits?lang=${lang}`}
                     style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      color: 'var(--accent-prussian)',
-                      textTransform: 'uppercase'
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: '0.86rem',
+                      fontWeight: 800,
+                      color: 'var(--brand-blue)'
                     }}
                   >
                     {t.services.exploreResidencePage}
@@ -427,11 +410,10 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                   <a
                     href={`/work-permits?lang=${lang}`}
                     style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      color: 'var(--accent-prussian)',
-                      textTransform: 'uppercase'
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: '0.86rem',
+                      fontWeight: 800,
+                      color: 'var(--brand-blue)'
                     }}
                   >
                     {t.services.exploreWorkPage}
@@ -439,7 +421,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
 
           {/* Filter Tabs & Voivodeship Selector */}
           <div className="services-toolbar">
@@ -484,93 +466,86 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
             </div>
           </div>
 
-          {/* Animated Services Grid */}
-          <motion.div layout className="services-grid" id="services-grid">
-            <AnimatePresence mode="popLayout">
-              {filteredCards.map((card) => {
-                const isOpen = !!openDrawers[card.key];
-                const isHighlighted = highlightedPermit === card.key;
-                const cityTimeline = VOIVODESHIP_DATA[selectedCity].timelines[card.key][lang];
+          {/* Services Grid */}
+          <div className="services-grid" id="services-grid">
+            {filteredCards.map((card) => {
+              const isOpen = !!openDrawers[card.key];
+              const isHighlighted = highlightedPermit === card.key;
+              const cityTimeline = VOIVODESHIP_DATA[selectedCity].timelines[card.key][lang];
 
-                return (
-                  <motion.article
-                    layout
-                    key={card.key}
-                    id={`service-card-${card.key}`}
-                    className={`service-card ${isHighlighted ? 'is-highlighted' : ''}`}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.97 }}
-                    transition={{ duration: 0.32 }}
-                  >
-                    <div>
-                      <div className="service-card__top">
-                        <span className="service-card__index">INDEX // {card.index}</span>
-                        <div className="service-timeline-badge">
-                          <span>{t.services.estProcessingLabel}:</span>
-                          <strong>{cityTimeline}</strong>
-                        </div>
+              return (
+                <article
+                  key={card.key}
+                  id={`service-card-${card.key}`}
+                  className={`service-card ${isHighlighted ? 'is-highlighted' : ''}`}
+                >
+                  <div>
+                    <div className="service-card__top">
+                      <span className="service-card__index">INDEX // {card.index}</span>
+                      <div className="service-timeline-badge">
+                        <span>{t.services.estProcessingLabel}:</span>
+                        <strong>{cityTimeline}</strong>
                       </div>
-
-                      <span className="service-card__statute">{card.statute}</span>
-                      <h3 className="service-card__title">{card.title}</h3>
-                      <p className="service-card__desc">{card.desc}</p>
-
-                      <ul className="service-features">
-                        {card.features.map((feat, i) => (
-                          <li key={i}>
-                            <span className="service-features__bullet">—</span>
-                            <span>{feat}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <AnimatePresence initial={false}>
-                        {isOpen && (
-                          <motion.div
-                            className="service-drawer"
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.25 }}
-                          >
-                            <h5>{card.checklistTitle}</h5>
-                            <ul>
-                              {card.checklistItems.map((ci, idx) => (
-                                <li key={idx}>• {ci}</li>
-                              ))}
-                            </ul>
-                            <div className="service-drawer__fee">{card.feeNote}</div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
                     </div>
 
-                    <div className="service-card__actions">
-                      <button
-                        type="button"
-                        className="btn btn--secondary btn--sm"
-                        id={`btn-checklist-${card.key}`}
-                        onClick={() =>
-                          setOpenDrawers((prev) => ({ ...prev, [card.key]: !prev[card.key] }))
-                        }
-                      >
-                        {isOpen ? t.services.hideChecklistBtn : t.services.showChecklistBtn}
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn--primary btn--sm"
-                        id={`btn-apply-${card.key}`}
-                        onClick={() => handlePreselectEligibility(card.key)}
-                      >
-                        {t.services.applyBtn}
-                      </button>
-                    </div>
-                  </motion.article>
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
+                    <span className="service-card__statute">{card.statute}</span>
+                    <h3 className="service-card__title">{card.title}</h3>
+                    <p className="service-card__desc">{card.desc}</p>
+
+                    <ul className="service-features">
+                      {card.features.map((feat, i) => (
+                        <li key={i}>
+                          <span className="service-features__bullet">•</span>
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          className="service-drawer"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.22 }}
+                        >
+                          <h5>{card.checklistTitle}</h5>
+                          <ul>
+                            {card.checklistItems.map((ci, idx) => (
+                              <li key={idx}>• {ci}</li>
+                            ))}
+                          </ul>
+                          <div className="service-drawer__fee">{card.feeNote}</div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <div className="service-card__actions">
+                    <button
+                      type="button"
+                      className="btn btn--secondary btn--sm"
+                      id={`btn-checklist-${card.key}`}
+                      onClick={() =>
+                        setOpenDrawers((prev) => ({ ...prev, [card.key]: !prev[card.key] }))
+                      }
+                    >
+                      {isOpen ? t.services.hideChecklistBtn : t.services.showChecklistBtn}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--primary btn--sm"
+                      id={`btn-apply-${card.key}`}
+                      onClick={() => handlePreselectEligibility(card.key)}
+                    >
+                      {t.services.applyBtn}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </div>
       </section>
     );
@@ -649,7 +624,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     initial={{ opacity: 0, x: 14 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -14 }}
-                    transition={{ duration: 0.24 }}
+                    transition={{ duration: 0.22 }}
                   >
                     <h3 className="wizard-title">{t.eligibility.step1Title}</h3>
                     <p className="wizard-sub">{t.eligibility.step1Sub}</p>
@@ -695,7 +670,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     </div>
 
                     <div className="wizard-footer">
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem' }}>
+                      <span style={{ fontFamily: 'var(--font-heading)', fontSize: '0.8rem', fontWeight: 800, color: 'var(--brand-blue)' }}>
                         01 / 03
                       </span>
                       <button
@@ -716,7 +691,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     initial={{ opacity: 0, x: 14 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -14 }}
-                    transition={{ duration: 0.24 }}
+                    transition={{ duration: 0.22 }}
                   >
                     <h3 className="wizard-title">{t.eligibility.step2Title}</h3>
                     <p className="wizard-sub">{t.eligibility.step2Sub}</p>
@@ -767,7 +742,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     initial={{ opacity: 0, x: 14 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -14 }}
-                    transition={{ duration: 0.24 }}
+                    transition={{ duration: 0.22 }}
                   >
                     <h3 className="wizard-title">{t.eligibility.step3Title}</h3>
                     <p className="wizard-sub">{t.eligibility.step3Sub}</p>
@@ -813,12 +788,12 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.25 }}
+                    transition={{ duration: 0.22 }}
                   >
                     <div className="result-dossier">
                       <span className="result-dossier__badge">{t.eligibility.resultBadge}</span>
                       <h4 id="result-permit-title">{rec.title}</h4>
-                      <p style={{ fontSize: '0.86rem', color: 'var(--ink-secondary)' }}>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                         {citizenship} → {rec.city} ({VOIVODESHIP_DATA[wizCity].portal})
                       </p>
 
@@ -902,13 +877,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
   const renderStoriesSection = () => (
     <section className="editorial-section editorial-section--stone" id="stories-section">
       <div className="container">
-        <motion.div
-          className="section-header-split"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUpVariant}
-        >
+        <div className="section-header-split">
           <div>
             <span className="section-eyebrow">{t.stories.eyebrow}</span>
             <h2 className="section-title">{t.stories.title}</h2>
@@ -920,11 +889,10 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                 <a
                   href={`/stories?lang=${lang}`}
                   style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    color: 'var(--accent-prussian)',
-                    textTransform: 'uppercase'
+                    fontFamily: 'var(--font-heading)',
+                    fontSize: '0.86rem',
+                    fontWeight: 800,
+                    color: 'var(--brand-blue)'
                   }}
                 >
                   {t.stories.viewAllBtn}
@@ -932,19 +900,11 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
 
         <div className="stories-grid">
-          {t.stories.items.map((story, idx) => (
-            <motion.article
-              key={story.name}
-              className="story-card"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }}
-              custom={idx * 0.08}
-              variants={fadeUpVariant}
-            >
+          {t.stories.items.map((story) => (
+            <article key={story.name} className="story-card">
               <div>
                 <div className="story-card__top">
                   <div className="candidate-profile">
@@ -952,13 +912,13 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                       src={story.image}
                       alt={story.name}
                       className="candidate-avatar"
-                      width={56}
-                      height={56}
+                      width={58}
+                      height={58}
                     />
                     <div className="candidate-meta">
                       <h3>
                         {story.name}{' '}
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>
                           [{story.flag}]
                         </span>
                       </h3>
@@ -976,15 +936,14 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                   <div
                     style={{
                       marginTop: '16px',
-                      padding: '12px',
-                      backgroundColor: 'var(--bg-paper)',
-                      border: '1px solid var(--hairline)',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.74rem',
-                      color: 'var(--ink-secondary)'
+                      padding: '12px 16px',
+                      backgroundColor: 'var(--bg-soft)',
+                      borderRadius: '12px',
+                      fontSize: '0.84rem',
+                      color: 'var(--text-secondary)'
                     }}
                   >
-                    <strong>CASE CHALLENGE:</strong> {story.challenge}
+                    <strong style={{ color: 'var(--brand-navy)' }}>CASE CHALLENGE:</strong> {story.challenge}
                   </div>
                 )}
               </div>
@@ -993,11 +952,11 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                 <span>
                   {t.stories.permitPrefix} <strong>{story.permit}</strong>
                 </span>
-                <span style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>
+                <span style={{ color: 'var(--accent-emerald)', fontWeight: 800 }}>
                   ✓ {t.stories.verifiedDecision}
                 </span>
               </div>
-            </motion.article>
+            </article>
           ))}
         </div>
       </div>
@@ -1031,7 +990,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     <span className="faq-trigger__index">0{idx + 1} //</span>
                     {item.q}
                   </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem' }}>
+                  <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.25rem', color: 'var(--brand-blue)' }}>
                     {isOpen ? '−' : '+'}
                   </span>
                 </button>
@@ -1041,7 +1000,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.25 }}
+                      transition={{ duration: 0.22 }}
                     >
                       <div className="faq-answer">{item.a}</div>
                     </motion.div>
@@ -1061,44 +1020,20 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
         Skip to main content
       </a>
 
-      {/* Editorial Archival Topbar */}
-      <div className="editorial-topbar">
-        <div className="container editorial-topbar__inner">
-          <span>{t.meta.issueTag}</span>
-          <span className="editorial-topbar__status">
-            <span className="status-dot" />
-            <span>{t.meta.lenisStatus}</span>
-            <span>• BYDGOSZCZ & WARSAW</span>
-          </span>
-        </div>
-      </div>
-
-      {/* Sticky Editorial Navigation Header */}
+      {/* Header Matching image.png: Logo on Left, Nav in Center, BYDGOSZCZ / PL • EN • RU on Right */}
       <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`} id="site-header">
         <div className="container nav-container">
-          <a href={`/?lang=${lang}`} className="brand-logo" id="nav-brand-logo">
-            <span className="brand-logo__mark" aria-hidden="true">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="m9 12 2 2 4-4" />
-              </svg>
-            </span>
-            <span className="brand-logo__text">
-              <span className="brand-logo__title">
-                Mobil<span className="brand-logo__accent">Work</span>
-              </span>
-              <span className="brand-logo__tag">{t.meta.brandTagline}</span>
-            </span>
+          <a href={`/?lang=${lang}`} className="brand-logo-wrap" id="nav-brand-logo">
+            <img
+              src="/assets/images/mobilwork-logo.png"
+              alt="MobilWork — Residence & Work in Poland"
+              className="brand-logo-img"
+              width={210}
+              height={36}
+            />
           </a>
 
-          <nav className="nav-links" aria-label="Primary Editorial Navigation">
+          <nav className="nav-links" aria-label="Primary Navigation">
             {navItems.map((item) => {
               const isActive = page === item.route;
               return (
@@ -1111,7 +1046,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                   {item.label}
                   {isActive && (
                     <motion.span
-                      layoutId="editorial-nav-underline"
+                      layoutId="nav-underline"
                       className="nav-link__underline"
                     />
                   )}
@@ -1120,25 +1055,23 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
             })}
           </nav>
 
-          <div className="nav-actions">
-            {/* Working 4-Language Switcher (EN / PL / UA / ES) */}
-            <div
-              className="lang-switcher"
-              id="language-switcher-btn"
-              role="group"
-              aria-label="Select Interface Language"
-            >
-              {LANGUAGES.map((l) => (
-                <button
-                  key={l.code}
-                  type="button"
-                  id={`lang-btn-${l.code}`}
-                  className={`lang-option-btn ${lang === l.code ? 'is-active' : ''}`}
-                  onClick={() => switchLanguage(l.code)}
-                  title={l.nativeName}
-                >
-                  {l.shortLabel}
-                </button>
+          <div className="header-right-meta">
+            <span className="city-stamp">BYDGOSZCZ</span>
+            <span className="header-slash">/</span>
+            <div className="lang-cluster" role="group" aria-label="Select Language">
+              {LANGUAGES.map((l, idx) => (
+                <React.Fragment key={l.code}>
+                  <button
+                    type="button"
+                    id={`lang-btn-${l.code}`}
+                    className={`lang-btn ${lang === l.code ? 'is-active' : ''}`}
+                    onClick={() => switchLanguage(l.code)}
+                    title={l.nativeName}
+                  >
+                    {l.shortLabel}
+                  </button>
+                  {idx < LANGUAGES.length - 1 && <span className="lang-dot">•</span>}
+                </React.Fragment>
               ))}
             </div>
 
@@ -1158,7 +1091,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
               aria-label="Open navigation menu"
               onClick={() => setMobileMenuOpen(true)}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <line x1="3" y1="7" x2="21" y2="7" />
                 <line x1="3" y1="12" x2="21" y2="12" />
                 <line x1="3" y1="17" x2="21" y2="17" />
@@ -1168,7 +1101,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
         </div>
       </header>
 
-      {/* Mobile Slide-Over Drawer with Framer Motion */}
+      {/* Mobile Slide-Over Drawer */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
@@ -1188,26 +1121,32 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
             >
               <div>
                 <div className="mobile-drawer__header">
-                  <span className="brand-logo__title">
-                    Mobil<span className="brand-logo__accent">Work</span>
-                  </span>
+                  <img
+                    src="/assets/images/mobilwork-logo.png"
+                    alt="MobilWork"
+                    style={{ height: '32px', width: 'auto' }}
+                  />
                   <button
                     type="button"
                     onClick={() => setMobileMenuOpen(false)}
                     aria-label="Close menu"
-                    style={{ padding: '6px', fontFamily: 'var(--font-mono)' }}
+                    style={{ fontSize: '1.25rem', padding: '6px', color: 'var(--brand-navy)' }}
                   >
                     ✕
                   </button>
                 </div>
 
-                <div style={{ marginTop: '14px', display: 'flex', gap: '6px' }}>
+                <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
                   {LANGUAGES.map((l) => (
                     <button
                       key={l.code}
                       type="button"
-                      className={`lang-option-btn ${lang === l.code ? 'is-active' : ''}`}
-                      style={{ border: '1px solid var(--hairline-strong)', flex: 1 }}
+                      className={`btn btn--secondary btn--sm ${lang === l.code ? 'is-active' : ''}`}
+                      style={{
+                        flex: 1,
+                        backgroundColor: lang === l.code ? 'var(--brand-blue)' : '#FFFFFF',
+                        color: lang === l.code ? '#FFFFFF' : 'var(--brand-blue)'
+                      }}
                       onClick={() => switchLanguage(l.code)}
                     >
                       {l.flag} {l.shortLabel}
@@ -1233,17 +1172,20 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
               <div>
                 <div
                   style={{
-                    padding: '14px',
-                    backgroundColor: 'var(--bg-stone)',
-                    border: '1px solid var(--hairline-strong)',
-                    fontSize: '0.8rem',
-                    marginBottom: '12px'
+                    padding: '16px',
+                    backgroundColor: 'var(--brand-blue-light)',
+                    borderRadius: '16px',
+                    fontSize: '0.84rem',
+                    marginBottom: '14px',
+                    color: 'var(--text-secondary)'
                   }}
                 >
-                  <strong style={{ display: 'block', marginBottom: '4px' }}>
-                    {t.nav.mobileOfficeTitle}
+                  <strong style={{ display: 'block', color: 'var(--brand-navy)', marginBottom: '4px' }}>
+                    Bydgoszcz Headquarters
                   </strong>
-                  {t.nav.mobileOfficeDesc}
+                  ul. Dworcowa 106-108, 85-010 Bydgoszcz
+                  <br />
+                  +48 571 436 605 • +48 609 162 266
                 </div>
                 <a
                   href={`/eligibility?lang=${lang}`}
@@ -1259,193 +1201,209 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
       </AnimatePresence>
 
       {/* ====================================================================
-         MAIN ROUTE CONTENT
+         MAIN CONTENT
          ==================================================================== */}
       <main id="main-content">
-        {/* ROUTE 1: HOME OVERVIEW */}
+        {/* ROUTE 1: HOME (Exact 1:1 Flyer Match + Full Portal Power) */}
         {page === 'home' && (
           <>
-            <section className="hero-section" id="top">
-              <div className="container hero-grid">
+            <section className="hero-flyer-section" id="top">
+              <div className="container hero-flyer-grid">
+                {/* Left Column: Headline, Blue Bar, 3 Flyer Pillars, CTAs */}
                 <motion.div
+                  className="hero-flyer-left"
                   initial="hidden"
                   animate="visible"
                   variants={fadeUpVariant}
                 >
-                  <div className="hero-kicker">
-                    <span className="hero-kicker__badge">{t.hero.eyebrow}</span>
-                    <span className="hero-kicker__text">{t.hero.eyebrowSub}</span>
-                  </div>
-
-                  <h1 className="hero-title">
-                    {t.hero.titleStart} <em>{t.hero.titleItalic}</em> {t.hero.titleEnd}
+                  <h1 className="hero-flyer-title">
+                    {flyerHero.headline1}<br />
+                    {flyerHero.headline2}
                   </h1>
+                  <div className="hero-blue-bar" aria-hidden="true" />
 
-                  <p className="hero-subtitle">{t.hero.subtitle}</p>
-
-                  {/* Dual-Action Permit & Voivodeship Ledger Widget */}
-                  <div className="hero-ledger-widget" role="search">
-                    <div className="hero-ledger-widget__top">
-                      <span className="hero-ledger-widget__title">{t.hero.widgetTitle}</span>
-                      <span className="hero-ledger-widget__stamp">{t.hero.widgetBadge}</span>
-                    </div>
-
-                    <div className="hero-ledger-controls">
-                      <div className="ledger-field">
-                        <label htmlFor="hero-permit-select">{t.hero.fieldPermit}</label>
-                        <select
-                          id="hero-permit-select"
-                          className="ledger-select"
-                          value={selectedPermit}
-                          onChange={(e) => setSelectedPermit(e.target.value as PermitKey)}
-                        >
-                          <option value="czasowy">{t.hero.permitOptions.czasowy}</option>
-                          <option value="work">{t.hero.permitOptions.work}</option>
-                          <option value="bluecard">{t.hero.permitOptions.bluecard}</option>
-                          <option value="family">{t.hero.permitOptions.family}</option>
-                        </select>
+                  {/* 3 Core Pillar Feature Blocks matching image.png */}
+                  <div className="flyer-pillars">
+                    {/* 1. Residence & Address Registration */}
+                    <div className="flyer-pillar-card">
+                      <div className="flyer-pillar-icon" aria-hidden="true">
+                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="2" y="5" width="20" height="14" rx="2" />
+                          <circle cx="8" cy="11.5" r="2.5" />
+                          <line x1="14" y1="9" x2="19" y2="9" />
+                          <line x1="14" y1="13" x2="19" y2="13" />
+                          <line x1="6" y1="16" x2="18" y2="16" />
+                        </svg>
                       </div>
-
-                      <div className="ledger-field">
-                        <label htmlFor="hero-city-select">{t.hero.fieldCity}</label>
-                        <select
-                          id="hero-city-select"
-                          className="ledger-select"
-                          value={selectedCity}
-                          onChange={(e) => setSelectedCity(e.target.value as CityKey)}
-                        >
-                          {(Object.keys(VOIVODESHIP_DATA) as CityKey[]).map((ck) => (
-                            <option key={ck} value={ck}>
-                              {VOIVODESHIP_DATA[ck].labels[lang]}
-                            </option>
-                          ))}
-                        </select>
+                      <div className="flyer-pillar-content">
+                        <h3>{flyerHero.pillars[0].title}</h3>
+                        <p>{flyerHero.pillars[0].desc}</p>
                       </div>
                     </div>
 
-                    <div className="hero-ledger-actions">
-                      <button
-                        type="button"
-                        className="btn btn--primary"
-                        id="hero-explore-permit-btn"
-                        onClick={handleHeroMatch}
-                      >
-                        <span>{t.hero.exploreBtn}</span>
-                        <span aria-hidden="true">→</span>
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn--secondary"
-                        id="hero-start-check-btn"
-                        onClick={() => handlePreselectEligibility(selectedPermit)}
-                      >
-                        <span>{t.hero.checkBtn}</span>
-                      </button>
+                    {/* 2. Temporary Employment Agency */}
+                    <div className="flyer-pillar-card">
+                      <div className="flyer-pillar-icon" aria-hidden="true">
+                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                          <circle cx="9" cy="7" r="4" />
+                          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                      </div>
+                      <div className="flyer-pillar-content">
+                        <h3>{flyerHero.pillars[1].title}</h3>
+                        <p>{flyerHero.pillars[1].desc}</p>
+                      </div>
                     </div>
 
-                    <div className="hero-ledger-preview" aria-live="polite">
-                      <span id="hero-preview-text">
-                        {t.hero.estDecisionPrefix} {currentCityObj.labels[lang]}:{' '}
-                        <strong>{currentTimeline}</strong>
-                      </span>
-                      <span id="hero-preview-fee">
-                        {t.hero.stampFeePrefix} <strong>{currentFee}</strong>
-                      </span>
+                    {/* 3. Vehicle Services */}
+                    <div className="flyer-pillar-card">
+                      <div className="flyer-pillar-icon" aria-hidden="true">
+                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9C2.1 11.2 2 11.6 2 12v4c0 .6.4 1 1 1h2" />
+                          <circle cx="7" cy="17" r="2" />
+                          <circle cx="17" cy="17" r="2" />
+                        </svg>
+                      </div>
+                      <div className="flyer-pillar-content">
+                        <h3>{flyerHero.pillars[2].title}</h3>
+                        <p>{flyerHero.pillars[2].desc}</p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="hero-reassurance-row">
-                    <span className="hero-reassurance-item">
-                      <span className="hero-reassurance-item__dot" />
-                      {t.hero.reassurance1}
-                    </span>
-                    <span className="hero-reassurance-item">
-                      <span className="hero-reassurance-item__dot" />
-                      {t.hero.reassurance2}
-                    </span>
-                    <span className="hero-reassurance-item">
-                      <span className="hero-reassurance-item__dot" />
-                      {t.hero.reassurance3}
+                  {/* Action Buttons */}
+                  <div className="hero-cta-row">
+                    <a href={`/eligibility?lang=${lang}`} className="btn btn--primary">
+                      <span>{t.nav.cta} (60s)</span>
+                      <span aria-hidden="true">→</span>
+                    </a>
+                    <button
+                      type="button"
+                      className="btn btn--secondary"
+                      onClick={() => smoothScrollTo('#services-section')}
+                    >
+                      <span>{t.hero.exploreBtn}</span>
+                    </button>
+                    <span className="hero-guarantee-pill">
+                      ✓ {t.hero.widgetBadge}
                     </span>
                   </div>
                 </motion.div>
 
-                {/* Right Column: Editorial Photography Composition */}
+                {/* Right Column: Iconic Blue Curved Shape from image.png */}
                 <motion.div
-                  className="hero-editorial-gallery"
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.65, delay: 0.12 }}
+                  className="hero-flyer-right"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.15 }}
                 >
-                  <div className="editorial-stamp-badge">
-                    <span>ARCHIVE RECORD // URZĄD WOJEWÓDZKI</span>
-                    <strong>
-                      {t.hero.collageIssued} • {t.hero.collageVerified}
-                    </strong>
+                  <div className="flyer-curved-banner">
+                    {/* Poland map with Bydgoszcz pin */}
+                    <div className="curved-map-wrap">
+                      <img
+                        src="/assets/images/poland-map-transparent.png"
+                        alt="Map of Poland with Bydgoszcz office location"
+                        className="curved-poland-map"
+                        width={130}
+                        height={115}
+                      />
+                    </div>
+
+                    {/* Slogan: Work / Live / Be legal / in Poland */}
+                    <div className="curved-slogan-wrap">
+                      <div className="curved-slogan">
+                        {flyerHero.slogan.line1}<br />
+                        {flyerHero.slogan.line2}<br />
+                        {flyerHero.slogan.line3}<br />
+                        {flyerHero.slogan.line4}
+                      </div>
+                      <div className="curved-white-bar" aria-hidden="true" />
+                    </div>
+
+                    {/* Historic Bydgoszcz Granaries */}
+                    <div className="curved-granary-wrap">
+                      <img
+                        src="/assets/images/spichrze-bydgoszcz-transparent.png"
+                        alt="Historic half-timbered granaries of Bydgoszcz (Spichrze nad Brdą)"
+                        className="curved-granary-img"
+                        width={189}
+                        height={195}
+                      />
+                    </div>
                   </div>
-
-                  <figure className="editorial-frame editorial-frame--main">
-                    <img
-                      src="/assets/images/hero-warsaw.jpg"
-                      alt={t.hero.collageMainTitle}
-                      width={640}
-                      height={480}
-                    />
-                    <figcaption className="editorial-caption">
-                      <div>
-                        <strong>{t.hero.collageMainTitle}</strong>
-                        <span>{t.hero.collageMainSub}</span>
-                      </div>
-                      <span className="editorial-caption__tag">{t.hero.collageMainTag}</span>
-                    </figcaption>
-                  </figure>
-
-                  <figure className="editorial-frame editorial-frame--sub">
-                    <img
-                      src="/assets/images/candidate-krakow.jpg"
-                      alt={t.hero.collageLeftTitle}
-                      width={320}
-                      height={320}
-                    />
-                    <figcaption className="editorial-caption">
-                      <div>
-                        <strong>{t.hero.collageLeftTitle}</strong>
-                        <span>{t.hero.collageLeftSub}</span>
-                      </div>
-                      <span className="editorial-caption__tag">{t.hero.collageLeftTag}</span>
-                    </figcaption>
-                  </figure>
-
-                  <figure className="editorial-frame editorial-frame--sub">
-                    <img
-                      src="/assets/images/candidate-gdansk.jpg"
-                      alt={t.hero.collageRightTitle}
-                      width={320}
-                      height={320}
-                    />
-                    <figcaption className="editorial-caption">
-                      <div>
-                        <strong>{t.hero.collageRightTitle}</strong>
-                        <span>{t.hero.collageRightSub}</span>
-                      </div>
-                      <span className="editorial-caption__tag">{t.hero.collageRightTag}</span>
-                    </figcaption>
-                  </figure>
                 </motion.div>
               </div>
-            </section>
 
-            {/* 4-Column Hairline Metrics Strip */}
-            <section className="metrics-strip" aria-label="Key Practice Metrics">
-              <div className="container">
-                <div className="metrics-grid">
-                  {t.metrics.map((m) => (
-                    <div className="metric-cell" key={m.index}>
-                      <span className="metric-cell__index">METRIC // {m.index}</span>
-                      <div className="metric-cell__value">{m.value}</div>
-                      <div className="metric-cell__label">{m.label}</div>
+              {/* Full-Bleed Contact Banner (Direct Match with Bottom of image.png) */}
+              <div className="flyer-contact-bar">
+                <div className="container">
+                  {/* 3 Dedicated Phone Lines */}
+                  <div className="flyer-phone-grid">
+                    <div className="flyer-phone-col">
+                      <div className="flyer-phone-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                      </div>
+                      <div className="flyer-phone-meta">
+                        <a href="tel:+48571436605">+48 571 436 605</a>
+                        <span>{flyerHero.contactBar.englishLabel}</span>
+                      </div>
                     </div>
-                  ))}
+
+                    <div className="flyer-phone-col">
+                      <div className="flyer-phone-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                      </div>
+                      <div className="flyer-phone-meta">
+                        <a href="tel:+48609162266">+48 609 162 266</a>
+                        <span>{flyerHero.contactBar.polishLabel}</span>
+                      </div>
+                    </div>
+
+                    <div className="flyer-phone-col">
+                      <div className="flyer-phone-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                      </div>
+                      <div className="flyer-phone-meta">
+                        <a href="tel:+48786443903">+48 786 443 903</a>
+                        <span>{flyerHero.contactBar.russianLabel}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Email, Address, Registration */}
+                  <div className="flyer-contact-details">
+                    <div className="flyer-details-left">
+                      <span className="contact-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="2" y="4" width="20" height="16" rx="2" />
+                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        </svg>
+                        <a href="mailto:biuro.mobilwork@gmail.com">biuro.mobilwork@gmail.com</a>
+                        <span style={{ opacity: 0.4 }}>|</span>
+                        <a href="mailto:trc.mobilwork@gmail.com">trc.mobilwork@gmail.com</a>
+                      </span>
+                      <span className="contact-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                          <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <strong>MobilWork</strong> ul. Dworcowa 106-108, 85-010 Bydgoszcz
+                      </span>
+                    </div>
+                    <div className="flyer-details-right">
+                      <span>KRAZ: 34972</span>
+                      <span style={{ margin: '0 8px', opacity: 0.5 }}>||</span>
+                      <span>NIP: 4660297787</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -1458,7 +1416,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
           </>
         )}
 
-        {/* ROUTE 2: DEDICATED RESIDENCE PERMITS PAGE (/residence-permits) */}
+        {/* ROUTE 2: DEDICATED RESIDENCE PERMITS PAGE */}
         {page === 'residence' && (
           <>
             <section className="page-hero">
@@ -1493,9 +1451,9 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                               key={cIdx}
                               style={
                                 cIdx === 0
-                                  ? { fontWeight: 700 }
+                                  ? { fontWeight: 800, color: 'var(--brand-navy)' }
                                   : cIdx === 1
-                                  ? { fontFamily: 'var(--font-mono)', color: 'var(--accent-prussian)' }
+                                  ? { fontFamily: 'var(--font-heading)', color: 'var(--brand-blue)', fontWeight: 700 }
                                   : undefined
                               }
                             >
@@ -1515,7 +1473,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
           </>
         )}
 
-        {/* ROUTE 3: DEDICATED WORK PERMITS PAGE (/work-permits) */}
+        {/* ROUTE 3: DEDICATED WORK PERMITS PAGE */}
         {page === 'work' && (
           <>
             <section className="page-hero">
@@ -1542,19 +1500,22 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     <div
                       key={item.code}
                       style={{
-                        border: '1px solid var(--ink-primary)',
-                        backgroundColor: 'var(--bg-paper)',
-                        padding: '28px'
+                        border: '1.5px solid var(--border-medium)',
+                        borderRadius: '20px',
+                        backgroundColor: '#FFFFFF',
+                        padding: '30px',
+                        boxShadow: 'var(--shadow-card)'
                       }}
                     >
                       <span
                         style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: '0.72rem',
-                          fontWeight: 700,
-                          padding: '4px 10px',
-                          backgroundColor: 'var(--bg-ink)',
-                          color: 'var(--ink-on-dark)',
+                          fontFamily: 'var(--font-heading)',
+                          fontSize: '0.78rem',
+                          fontWeight: 800,
+                          padding: '4px 12px',
+                          borderRadius: '20px',
+                          backgroundColor: 'var(--brand-blue)',
+                          color: '#FFFFFF',
                           display: 'inline-block',
                           marginBottom: '14px'
                         }}
@@ -1563,9 +1524,10 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                       </span>
                       <h3
                         style={{
-                          fontFamily: 'var(--font-serif)',
-                          fontSize: '1.65rem',
-                          fontWeight: 400,
+                          fontFamily: 'var(--font-heading)',
+                          fontSize: '1.45rem',
+                          fontWeight: 800,
+                          color: 'var(--brand-navy)',
                           marginBottom: '6px'
                         }}
                       >
@@ -1573,15 +1535,16 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                       </h3>
                       <div
                         style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: '0.72rem',
-                          color: 'var(--accent-prussian)',
+                          fontFamily: 'var(--font-heading)',
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          color: 'var(--brand-blue)',
                           marginBottom: '12px'
                         }}
                       >
                         {item.statute}
                       </div>
-                      <p style={{ fontSize: '0.92rem', color: 'var(--ink-secondary)' }}>
+                      <p style={{ fontSize: '0.94rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                         {item.desc}
                       </p>
                     </div>
@@ -1595,7 +1558,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
           </>
         )}
 
-        {/* ROUTE 4: DEDICATED 4-STAGE PROCESS & VOIVODESHIP REGISTRY PAGE (/process) */}
+        {/* ROUTE 4: DEDICATED 4-STAGE PROCESS PAGE */}
         {page === 'process' && (
           <>
             <section className="page-hero">
@@ -1629,16 +1592,16 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                         const v = VOIVODESHIP_DATA[ck];
                         return (
                           <tr key={ck}>
-                            <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+                            <td style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, color: 'var(--brand-blue)' }}>
                               {v.code}
                             </td>
                             <td>
                               <strong>{v.labels[lang]}</strong>
-                              <div style={{ fontSize: '0.76rem', color: 'var(--ink-muted)' }}>
+                              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                                 {v.address}
                               </div>
                             </td>
-                            <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
+                            <td style={{ fontSize: '0.85rem', fontWeight: 600 }}>
                               {v.portal}
                             </td>
                             <td>{v.timelines.czasowy[lang]}</td>
@@ -1656,7 +1619,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
           </>
         )}
 
-        {/* ROUTE 5: DEDICATED CASE STUDIES & STORIES PAGE (/stories) */}
+        {/* ROUTE 5: DEDICATED CASE STUDIES PAGE */}
         {page === 'stories' && (
           <>
             <section className="page-hero">
@@ -1672,7 +1635,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
           </>
         )}
 
-        {/* ROUTE 6: DEDICATED ELIGIBILITY & OFFICES PAGE (/eligibility) */}
+        {/* ROUTE 6: DEDICATED ELIGIBILITY PAGE */}
         {page === 'eligibility' && (
           <>
             <section className="page-hero">
@@ -1688,7 +1651,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
           </>
         )}
 
-        {/* ROUTE 7: DEDICATED LEGAL, RODO & PROXY TERMS PAGE (/legal) */}
+        {/* ROUTE 7: DEDICATED LEGAL & RODO PAGE */}
         {page === 'legal' && (
           <>
             <section className="page-hero">
@@ -1707,17 +1670,19 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     id={sec.id}
                     style={{
                       padding: '32px',
-                      border: '1px solid var(--ink-primary)',
-                      backgroundColor: 'var(--bg-paper)',
-                      marginBottom: '24px'
+                      borderRadius: '20px',
+                      border: '1.5px solid var(--border-medium)',
+                      backgroundColor: '#FFFFFF',
+                      marginBottom: '24px',
+                      boxShadow: 'var(--shadow-card)'
                     }}
                   >
                     <span
                       style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '0.72rem',
-                        color: 'var(--accent-prussian)',
-                        fontWeight: 700,
+                        fontFamily: 'var(--font-heading)',
+                        fontSize: '0.78rem',
+                        color: 'var(--brand-blue)',
+                        fontWeight: 800,
                         display: 'block',
                         marginBottom: '8px'
                       }}
@@ -1726,15 +1691,18 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                     </span>
                     <h2
                       style={{
-                        fontFamily: 'var(--font-serif)',
-                        fontWeight: 400,
-                        fontSize: '1.85rem',
+                        fontFamily: 'var(--font-heading)',
+                        fontWeight: 800,
+                        fontSize: '1.65rem',
+                        color: 'var(--brand-navy)',
                         marginBottom: '12px'
                       }}
                     >
                       {sec.title}
                     </h2>
-                    <p style={{ color: 'var(--ink-secondary)', lineHeight: 1.75 }}>{sec.body}</p>
+                    <p style={{ color: 'var(--text-secondary)', lineHeight: 1.75, fontSize: '0.98rem' }}>
+                      {sec.body}
+                    </p>
                   </article>
                 ))}
               </div>
@@ -1744,31 +1712,24 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
       </main>
 
       {/* ====================================================================
-         EDITORIAL FOOTER
+         FOOTER
          ==================================================================== */}
       <footer className="site-footer" id="site-footer">
         <div className="container">
           <div className="footer-grid">
             <div>
-              <a href={`/?lang=${lang}`} className="brand-logo" style={{ marginBottom: '16px' }}>
-                <span
-                  className="brand-logo__mark"
-                  style={{ borderColor: 'rgba(255,255,255,0.3)' }}
-                >
-                  MW
-                </span>
-                <span className="brand-logo__text">
-                  <span className="brand-logo__title" style={{ color: '#F7F5F0' }}>
-                    Mobil<span className="brand-logo__accent" style={{ color: '#93C5FD' }}>Work</span>
-                  </span>
-                  <span className="brand-logo__tag">{t.meta.brandTagline}</span>
-                </span>
+              <a href={`/?lang=${lang}`} className="brand-logo-wrap" style={{ marginBottom: '18px', display: 'inline-block' }}>
+                <img
+                  src="/assets/images/mobilwork-logo.png"
+                  alt="MobilWork"
+                  style={{ height: '36px', width: 'auto', filter: 'brightness(0) invert(1)' }}
+                />
               </a>
               <p
                 style={{
-                  fontSize: '0.86rem',
-                  color: 'var(--ink-on-dark-muted)',
-                  marginBottom: '16px',
+                  fontSize: '0.88rem',
+                  color: 'var(--text-on-dark-muted)',
+                  marginBottom: '18px',
                   lineHeight: 1.65
                 }}
               >
@@ -1779,17 +1740,18 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                   display: 'flex',
                   gap: '8px',
                   flexWrap: 'wrap',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.68rem'
+                  fontFamily: 'var(--font-heading)',
+                  fontSize: '0.75rem',
+                  fontWeight: 700
                 }}
               >
-                <span style={{ border: '1px solid var(--hairline-light)', padding: '4px 8px' }}>
-                  KRS: 0000894120
+                <span style={{ border: '1px solid var(--border-dark-bar)', padding: '5px 10px', borderRadius: '6px' }}>
+                  KRAZ: 34972
                 </span>
-                <span style={{ border: '1px solid var(--hairline-light)', padding: '4px 8px' }}>
-                  NIP: 5542981042
+                <span style={{ border: '1px solid var(--border-dark-bar)', padding: '5px 10px', borderRadius: '6px' }}>
+                  NIP: 4660297787
                 </span>
-                <span style={{ border: '1px solid var(--hairline-light)', padding: '4px 8px' }}>
+                <span style={{ border: '1px solid var(--border-dark-bar)', padding: '5px 10px', borderRadius: '6px' }}>
                   RODO / GDPR
                 </span>
               </div>
@@ -1809,14 +1771,16 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
             <div className="footer-col">
               <h3>{t.footer.officesTitle}</h3>
               <div className="office-card">
-                <strong>{t.footer.bydgoszczTitle}</strong>
-                ul. Gdańska 47, 3rd Floor, 85-005 Bydgoszcz
+                <strong>Bydgoszcz Headquarters</strong>
+                ul. Dworcowa 106-108, 85-010 Bydgoszcz
                 <br />
-                +48 52 511 84 20 • bydgoszcz@mobilwork.pl
+                +48 571 436 605 • +48 609 162 266
+                <br />
+                biuro.mobilwork@gmail.com
               </div>
               <div className="office-card">
-                <strong>{t.footer.warsawTitle}</strong>
-                ul. Złota 59 (Skylight, 14th Fl), 00-120 Warszawa
+                <strong>Warsaw Branch Office</strong>
+                ul. Złota 59 (Skylight Building, 14th Fl), 00-120 Warszawa
                 <br />
                 +48 22 690 41 10 • warsaw@mobilwork.pl
               </div>
@@ -1826,9 +1790,10 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
               <h3>{t.footer.newsletterTitle}</h3>
               <p
                 style={{
-                  fontSize: '0.82rem',
-                  color: 'var(--ink-on-dark-muted)',
-                  marginBottom: '12px'
+                  fontSize: '0.84rem',
+                  color: 'var(--text-on-dark-muted)',
+                  marginBottom: '14px',
+                  lineHeight: 1.5
                 }}
               >
                 {t.footer.newsletterDesc}
@@ -1839,10 +1804,10 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                   id="newsletter-email"
                   className="form-input"
                   style={{
-                    backgroundColor: 'rgba(255,255,255,0.06)',
-                    borderColor: 'var(--hairline-light)',
-                    color: '#F7F5F0',
-                    marginBottom: '8px'
+                    backgroundColor: 'rgba(255,255,255,0.08)',
+                    borderColor: 'var(--border-dark-bar)',
+                    color: '#FFFFFF',
+                    marginBottom: '10px'
                   }}
                   placeholder={t.footer.newsletterPlaceholder}
                   value={newsletterEmail}
@@ -1853,11 +1818,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                   type="submit"
                   className="btn btn--primary btn--sm"
                   id="newsletter-submit-btn"
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#F7F5F0',
-                    color: '#111317'
-                  }}
+                  style={{ width: '100%' }}
                 >
                   {t.footer.newsletterBtn}
                 </button>
@@ -1865,9 +1826,9 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
                   <div
                     style={{
                       marginTop: '8px',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.72rem',
-                      color: '#6EE7B7'
+                      fontSize: '0.8rem',
+                      color: '#6EE7B7',
+                      fontWeight: 700
                     }}
                   >
                     {newsletterStatus}
@@ -1878,12 +1839,12 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
           </div>
 
           <div className="footer-disclaimer">
-            <strong style={{ color: '#F7F5F0' }}>{t.footer.disclaimerTitle}</strong>{' '}
+            <strong style={{ color: '#FFFFFF' }}>{t.footer.disclaimerTitle}</strong>{' '}
             {t.footer.disclaimerText}
           </div>
 
           <div className="footer-bottom">
-            <span>{t.footer.copyright}</span>
+            <span>© 2026 MobilWork Sp. z o.o. Bydgoszcz, Poland. All rights reserved.</span>
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
               <a href={`/legal?lang=${lang}#rodo`}>{t.footer.privacyLink}</a>
               <a href={`/legal?lang=${lang}#proxy`}>{t.footer.termsLink}</a>
@@ -1905,7 +1866,7 @@ export default function EditorialPortal({ page }: EditorialPortalProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
           >
-            <span style={{ color: '#34D399' }}>●</span>
+            <span style={{ color: '#34D399', fontSize: '1.1rem' }}>●</span>
             <span id="toast-message">{toastMsg}</span>
           </motion.div>
         )}

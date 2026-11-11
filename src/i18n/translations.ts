@@ -182,6 +182,46 @@ export const PERMIT_FEES: Record<PermitKey, Record<LangCode, string>> = {
 
 export const TRANSLATIONS = {
   en: {
+    flyerHero: {
+      headline1: 'Residence permits',
+      headline2: 'and work in Poland',
+      pillars: [
+        {
+          id: 'residence',
+          title: 'Residence and address registration',
+          desc: 'Residence cards, EU long-term resident permits, address registration'
+        },
+        {
+          id: 'agency',
+          title: 'Temporary employment agency',
+          desc: 'Recruitment and job opportunities'
+        },
+        {
+          id: 'vehicle',
+          title: 'Vehicle services',
+          desc: 'Help with vehicle registration, buying and selling'
+        }
+      ],
+      slogan: {
+        line1: 'Work',
+        line2: 'Live',
+        line3: 'Be legal',
+        line4: 'in Poland'
+      },
+      contactBar: {
+        englishPhone: '+48 571 436 605',
+        englishLabel: 'In English',
+        polishPhone: '+48 609 162 266',
+        polishLabel: 'In Polish',
+        russianPhone: '+48 786 443 903',
+        russianLabel: 'In Russian / Ukrainian',
+        email1: 'biuro.mobilwork@gmail.com',
+        email2: 'trc.mobilwork@gmail.com',
+        address: 'ul. Dworcowa 106-108, 85-010 Bydgoszcz',
+        kraz: 'KRAZ: 34972',
+        nip: 'NIP: 4660297787'
+      }
+    },
     meta: {
       issueTag: 'LEGAL PRACTICE • ACT ON FOREIGNERS (DZ.U. 2026) • ALL 16 VOIVODESHIPS',
       brandTagline: 'Karta Pobytu & Work Permits',
@@ -667,6 +707,46 @@ export const TRANSLATIONS = {
   },
 
   pl: {
+    flyerHero: {
+      headline1: 'Zezwolenia na pobyt',
+      headline2: 'i praca w Polsce',
+      pillars: [
+        {
+          id: 'residence',
+          title: 'Pobyt i rejestracja adresu',
+          desc: 'Karty pobytu, pobyt rezydenta długoterminowego UE, meldunek'
+        },
+        {
+          id: 'agency',
+          title: 'Agencja pracy tymczasowej',
+          desc: 'Rekrutacja i oferty pracy'
+        },
+        {
+          id: 'vehicle',
+          title: 'Usługi samochodowe i pojazdy',
+          desc: 'Pomoc w rejestracji pojazdów, kupno i sprzedaż'
+        }
+      ],
+      slogan: {
+        line1: 'Pracuj',
+        line2: 'Żyj',
+        line3: 'Bądź legalnie',
+        line4: 'w Polsce'
+      },
+      contactBar: {
+        englishPhone: '+48 571 436 605',
+        englishLabel: 'Po angielsku',
+        polishPhone: '+48 609 162 266',
+        polishLabel: 'Po polsku',
+        russianPhone: '+48 786 443 903',
+        russianLabel: 'Po ukraińsku / rosyjsku',
+        email1: 'biuro.mobilwork@gmail.com',
+        email2: 'trc.mobilwork@gmail.com',
+        address: 'ul. Dworcowa 106-108, 85-010 Bydgoszcz',
+        kraz: 'KRAZ: 34972',
+        nip: 'NIP: 4660297787'
+      }
+    },
     meta: {
       issueTag: 'PRAKTYKA PRAWNA • USTAWA O CUDZOZIEMCACH (DZ.U. 2026) • WSZYSTKIE 16 WOJEWÓDZTW',
       brandTagline: 'Karta Pobytu i Zezwolenia na Pracę',
@@ -1152,6 +1232,46 @@ export const TRANSLATIONS = {
   },
 
   ua: {
+    flyerHero: {
+      headline1: 'Дозволи на побит',
+      headline2: 'та робота в Польщі',
+      pillars: [
+        {
+          id: 'residence',
+          title: 'Побит та реєстрація адреси',
+          desc: 'Карти побиту, побит довгострокового резидента ЄС, прописка'
+        },
+        {
+          id: 'agency',
+          title: 'Агенція тимчасової праці',
+          desc: 'Рекрутинг та вакансії'
+        },
+        {
+          id: 'vehicle',
+          title: 'Послуги для авто',
+          desc: 'Допомога з реєстрацією авто, купівля та продаж'
+        }
+      ],
+      slogan: {
+        line1: 'Працюй',
+        line2: 'Живи',
+        line3: 'Будь легально',
+        line4: 'в Польщі'
+      },
+      contactBar: {
+        englishPhone: '+48 571 436 605',
+        englishLabel: 'Англійською',
+        polishPhone: '+48 609 162 266',
+        polishLabel: 'Польською',
+        russianPhone: '+48 786 443 903',
+        russianLabel: 'Українською / Російською',
+        email1: 'biuro.mobilwork@gmail.com',
+        email2: 'trc.mobilwork@gmail.com',
+        address: 'ul. Dworcowa 106-108, 85-010 Bydgoszcz',
+        kraz: 'KRAZ: 34972',
+        nip: 'NIP: 4660297787'
+      }
+    },
     meta: {
       issueTag: 'ЮРИДИЧНА ПРАКТИКА • ЗАКОН ПРО ІНОЗЕМЦІВ (DZ.U. 2026) • УСІ 16 ВОЄВОДСТВ',
       brandTagline: 'Карта Побиту та Дозволи на Роботу',
@@ -1637,6 +1757,46 @@ export const TRANSLATIONS = {
   },
 
   es: {
+    flyerHero: {
+      headline1: 'Permisos de residencia',
+      headline2: 'y trabajo en Polonia',
+      pillars: [
+        {
+          id: 'residence',
+          title: 'Residencia y registro de domicilio',
+          desc: 'Tarjetas de residencia, residencia de larga duración UE, empadronamiento'
+        },
+        {
+          id: 'agency',
+          title: 'Agencia de empleo temporal',
+          desc: 'Reclutamiento y oportunidades laborales'
+        },
+        {
+          id: 'vehicle',
+          title: 'Servicios de vehículos',
+          desc: 'Ayuda con matriculación de vehículos, compra y venta'
+        }
+      ],
+      slogan: {
+        line1: 'Trabaja',
+        line2: 'Vive',
+        line3: 'Sé legal',
+        line4: 'en Polonia'
+      },
+      contactBar: {
+        englishPhone: '+48 571 436 605',
+        englishLabel: 'En inglés',
+        polishPhone: '+48 609 162 266',
+        polishLabel: 'En polaco',
+        russianPhone: '+48 786 443 903',
+        russianLabel: 'En ucraniano / ruso',
+        email1: 'biuro.mobilwork@gmail.com',
+        email2: 'trc.mobilwork@gmail.com',
+        address: 'ul. Dworcowa 106-108, 85-010 Bydgoszcz',
+        kraz: 'KRAZ: 34972',
+        nip: 'NIP: 4660297787'
+      }
+    },
     meta: {
       issueTag: 'PRÁCTICA LEGAL • LEY DE EXTRANJERÍA (DZ.U. 2026) • LAS 16 VOIVODÍAS',
       brandTagline: 'Karta Pobytu y Permisos de Trabajo',
